@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)" filter="url(#dropShadow)" />
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="none" stroke="#334155" stroke-width="4" opacity="0.6" />
+
+  <g transform="translate(10, 0)">
+    <path d="M 120 120 L 120 400" stroke="#475569" stroke-width="12" stroke-linecap="round" />
+    <path d="M 380 120 L 380 400" stroke="#475569" stroke-width="12" stroke-linecap="round" />
+    
+    <rect x="105" y="95" width="290" height="42" rx="10" fill="url(#goldGrad)" />
+    <circle cx="140" cy="116" r="6" fill="#78350f" />
+    <rect x="165" y="112" width="170" height="8" rx="4" fill="#78350f" />
+
+    <rect x="135" y="175" width="230" height="14" rx="7" fill="#64748b" />
+    <rect x="155" y="145" width="40" height="30" rx="6" fill="url(#blueGrad)" />
+    <rect x="205" y="140" width="40" height="35" rx="6" fill="url(#blueGrad)" />
+    <rect x="255" y="140" width="40" height="35" rx="6" fill="url(#blueGrad)" />
+    <rect x="305" y="145" width="40" height="30" rx="6" fill="url(#blueGrad)" />
+
+    <rect x="135" y="245" width="230" height="14" rx="7" fill="#64748b" />
+    <rect x="160" y="210" width="45" height="35" rx="6" fill="url(#goldGrad)" />
+    <rect x="215" y="205" width="70" height="40" rx="6" fill="url(#goldGrad)" />
+    <rect x="295" y="210" width="45" height="35" rx="6" fill="url(#goldGrad)" />
+
+    <rect x="135" y="315" width="230" height="14" rx="7" fill="#64748b" />
+    <rect x="150" y="280" width="32" height="35" rx="5" fill="#f87171" />
+    <rect x="190" y="275" width="32" height="40" rx="5" fill="#f87171" />
+    <rect x="230" y="275" width="32" height="40" rx="5" fill="#f87171" />
+    <rect x="270" y="275" width="32" height="40" rx="5" fill="#fb923c" />
+    <rect x="310" y="280" width="32" height="35" rx="5" fill="#fb923c" />
+
+    <rect x="110" y="380" width="280" height="24" rx="8" fill="#1e293b" stroke="#475569" stroke-width="4" />
+  </g>
+
+  <g transform="translate(300, 300)" filter="url(#dropShadow)">
+    <circle cx="85" cy="85" r="75" fill="#0f172a" stroke="#10b981" stroke-width="6" />
+    <text x="85" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="70" font-weight="900" fill="url(#greenGrad)" text-anchor="middle">%</text>
+  </g>
+</svg>
