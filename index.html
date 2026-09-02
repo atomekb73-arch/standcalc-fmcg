@@ -43,14 +43,14 @@
         <img src="favicon.svg" alt="StandCalc Logo" class="w-8 h-8 rounded-xl shadow border border-slate-700/60 p-0.5 bg-slate-900 object-contain" />
         <div>
           <h1 class="text-sm sm:text-base font-bold tracking-tight leading-tight">StandCalc FMCG PRO</h1>
-          <span class="text-[10px] text-slate-400 block">Kalkulator cen standu dla grupy Zachód</span>
+          <span class="text-[10px] text-slate-400 block">Autozapamiętywanie &amp; Logika Zer</span>
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <button onclick="loadTemplate('minionki')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
+        <button onclick="loadFreshTemplate('minionki')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
           🍌 MINIONKI (265 szt.)
         </button>
-        <button onclick="loadTemplate('psi-patrol')" class="bg-blue-600 active:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
+        <button onclick="loadFreshTemplate('psi-patrol')" class="bg-blue-600 active:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
           🐾 PSI PATROL (179 szt.)
         </button>
         <button onclick="clearAll()" class="bg-slate-800 active:bg-slate-700 text-slate-300 text-[11px] sm:text-xs font-medium px-2.5 py-2 rounded-lg transition">
@@ -67,14 +67,14 @@
       <div>
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Stand Netto (zł)</label>
         <div class="relative">
-          <input type="text" id="targetPrice" value="740.00" inputmode="decimal" onclick="this.select()" onchange="calculate()" onkeydown="if(event.key==='Enter') { this.blur(); calculate(); }" class="w-full h-9 pl-2 pr-6 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-black text-slate-900 text-sm outline-none" />
+          <input type="text" id="targetPrice" value="740.00" inputmode="decimal" onclick="this.select()" onchange="saveAndCalculate()" onkeydown="if(event.key==='Enter') { this.blur(); saveAndCalculate(); }" class="w-full h-9 pl-2 pr-6 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-black text-slate-900 text-sm outline-none" />
           <span class="absolute right-2 top-2 text-slate-400 font-bold text-xs">zł</span>
         </div>
       </div>
 
       <div>
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Stawka VAT</label>
-        <select id="vatRate" onchange="calculate()" class="w-full h-9 px-1.5 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-bold text-slate-800 bg-white outline-none text-xs">
+        <select id="vatRate" onchange="saveAndCalculate()" class="w-full h-9 px-1.5 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-bold text-slate-800 bg-white outline-none text-xs">
           <option value="0.05" selected>5% (pieczywo)</option>
           <option value="0.23">23% (standard)</option>
           <option value="0.08">8%</option>
@@ -203,10 +203,11 @@
   </main>
 
   <script>
+    const STORAGE_KEY = 'STANDCALC_PERSISTED_STATE_V1';
     let currentTemplateKey = 'minionki';
     let shelves = [];
 
-    const templates = {
+    const defaultTemplates = {
       'minionki': {
         name: 'MINIONKI (7 PÓŁEK / 265 SZT.)',
         targetNetto: 740.00,
@@ -215,9 +216,9 @@
           { name: 'PRECELKI MINIONKI 120 G', qty: 34, ean: '5907029013903', isFixed: false, price: 0, marginPercent: 25 },
           { name: 'PALUSZKI MINIONKI 200 G', qty: 28, ean: '5907029013866', isFixed: false, price: 0, marginPercent: 25 },
           { name: 'PALUSZKI MINIONKI 60 G', qty: 86, ean: '5907029013835', isFixed: false, price: 0, marginPercent: 25 },
-          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029002259', isFixed: true, price: 3.69, marginPercent: 25 },
-          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 },
-          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 }
+          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029002259', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: false, price: 0, marginPercent: 25 }
         ]
       },
       'psi-patrol': {
@@ -227,9 +228,9 @@
           { name: 'KRAKERSY PSI PATROL 90 G', qty: 35, ean: '5907029013927', isFixed: false, price: 0, marginPercent: 25 },
           { name: 'PRECELKI PSI PATROL 120 G', qty: 34, ean: '5907029013989', isFixed: false, price: 0, marginPercent: 25 },
           { name: 'PALUSZKI PSI PATROL 200 G', qty: 28, ean: '5907029013965', isFixed: false, price: 0, marginPercent: 25 },
-          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029010797', isFixed: true, price: 3.69, marginPercent: 25 },
-          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 },
-          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 }
+          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029010797', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: false, price: 0, marginPercent: 25 }
         ]
       }
     };
@@ -240,24 +241,59 @@
       return parseFloat(normalized) || 0;
     }
 
-    function loadTemplate(key) {
+    function saveState() {
+      const state = {
+        currentTemplateKey,
+        targetPrice: document.getElementById('targetPrice').value,
+        vatRate: document.getElementById('vatRate').value,
+        globalMargin: document.getElementById('globalMargin').value,
+        table1Title: document.getElementById('table1Title').innerText,
+        shelves
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadSavedState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      try {
+        const state = JSON.parse(raw);
+        currentTemplateKey = state.currentTemplateKey || 'minionki';
+        document.getElementById('targetPrice').value = state.targetPrice || '740.00';
+        document.getElementById('vatRate').value = state.vatRate || '0.05';
+        document.getElementById('globalMargin').value = state.globalMargin || '25';
+        document.getElementById('table1Title').innerText = state.table1Title || 'ROZLICZENIE STANDU NETTO';
+        shelves = state.shelves || [];
+        calculate();
+        return true;
+      } catch (e) {
+        console.error('Błąd odczytu pamięci podręcznej:', e);
+        return false;
+      }
+    }
+
+    function loadFreshTemplate(key) {
       currentTemplateKey = key;
-      const t = templates[key];
+      const t = defaultTemplates[key];
       document.getElementById('table1Title').innerText = `ROZLICZENIE STANDU NETTO \u2013 ${t.name}`;
       document.getElementById('targetPrice').value = t.targetNetto.toFixed(2);
       const globalM = parseNumericInput(document.getElementById('globalMargin').value) || 25;
+      
+      // Wszystkie pozycje czyste, wyzerowane, z trybem Auto
       shelves = JSON.parse(JSON.stringify(t.items)).map(item => ({
         ...item,
+        isFixed: false,
+        price: 0,
         marginPercent: globalM,
         splitNote: ''
       }));
-      calculate();
+      saveAndCalculate();
     }
 
     function clearAll() {
       shelves = [];
       document.getElementById('table1Title').innerText = 'ROZLICZENIE STANDU NETTO';
-      calculate();
+      saveAndCalculate();
     }
 
     function addRow() {
@@ -271,36 +307,57 @@
         marginPercent: globalM,
         splitNote: ''
       });
-      calculate();
+      saveAndCalculate();
     }
 
     function removeRow(idx) {
       shelves.splice(idx, 1);
-      calculate();
+      saveAndCalculate();
     }
 
     function toggleLock(idx) {
       shelves[idx].isFixed = !shelves[idx].isFixed;
-      calculate();
+      // Jeśli użytkownik ręcznie odblokował na Auto, a cena była wpisana, pozwalamy algorytmowi ją przeliczyć
+      if (!shelves[idx].isFixed) {
+        shelves[idx].price = 0;
+      }
+      saveAndCalculate();
     }
 
     function applyGlobalMargin(val) {
       const m = Math.max(0, Math.min(95, parseNumericInput(val)));
       shelves.forEach(s => s.marginPercent = m);
-      calculate();
+      saveAndCalculate();
     }
 
-    function updateFieldAndRecalc(idx, key, val) {
+    function handlePriceInput(idx, val) {
+      const parsed = parseNumericInput(val);
+      if (parsed === 0) {
+        // Wpisanie 0 = przestawienie na Auto i wyliczenie ceny z budżetu
+        shelves[idx].isFixed = false;
+        shelves[idx].price = 0;
+      } else {
+        // Wpisanie konkretnej kwoty = zablokowanie jako stała cena
+        shelves[idx].isFixed = true;
+        shelves[idx].price = parsed;
+      }
+      saveAndCalculate();
+    }
+
+    function updateField(idx, key, val) {
       if (key === 'qty') {
         shelves[idx].qty = Math.max(0, parseInt(val) || 0);
-      } else if (key === 'price') {
-        shelves[idx].price = Math.max(0, parseNumericInput(val));
       } else if (key === 'marginPercent') {
         shelves[idx].marginPercent = Math.max(0, Math.min(95, parseNumericInput(val)));
       } else {
         shelves[idx][key] = val;
       }
+      saveAndCalculate();
+    }
+
+    function saveAndCalculate() {
       calculate();
+      saveState();
     }
 
     function calculate() {
@@ -405,11 +462,11 @@
         pTr.innerHTML = `
           <td class="py-2 px-1 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
           <td class="py-2 px-1.5 overflow-hidden">
-            <div contenteditable="true" onblur="updateFieldAndRecalc(${idx}, 'name', this.innerText)" class="font-bold text-slate-900 text-xs leading-snug outline-none break-words">${item.name}</div>
+            <div contenteditable="true" onblur="updateField(${idx}, 'name', this.innerText)" class="font-bold text-slate-900 text-xs leading-snug outline-none break-words">${item.name}</div>
             ${item.splitNote ? `<div class="text-[9px] text-blue-700 font-semibold leading-tight mt-0.5 break-words">${item.splitNote}</div>` : ''}
           </td>
           <td class="py-2 px-1 text-center">
-            <input type="text" inputmode="numeric" value="${item.qty}" onclick="this.select()" onchange="updateFieldAndRecalc(${idx}, 'qty', this.value)" onkeydown="if(event.key==='Enter') { this.blur(); updateFieldAndRecalc(${idx}, 'qty', this.value); }" class="w-full max-w-[50px] h-7 px-1 border border-slate-300 rounded text-center font-black text-slate-900 text-xs outline-none focus:border-blue-500" />
+            <input type="text" inputmode="numeric" value="${item.qty}" onclick="this.select()" onchange="updateField(${idx}, 'qty', this.value)" onkeydown="if(event.key==='Enter') { this.blur(); updateField(${idx}, 'qty', this.value); }" class="w-full max-w-[50px] h-7 px-1 border border-slate-300 rounded text-center font-black text-slate-900 text-xs outline-none focus:border-blue-500" />
           </td>
           <td class="py-2 px-1 text-center font-mono text-[10px] text-slate-500 truncate">
             ${item.ean || '-'}
@@ -424,8 +481,8 @@
             </button>
           </td>
           <td class="py-2 px-1 text-right">
-            <input type="text" inputmode="decimal" value="${item.price.toFixed(2)}" ${item.isFixed ? '' : 'disabled'} onclick="this.select()" onchange="updateFieldAndRecalc(${idx}, 'price', this.value)" onkeydown="if(event.key==='Enter') { this.blur(); updateFieldAndRecalc(${idx}, 'price', this.value); }" class="w-full max-w-[65px] h-7 px-1 border rounded text-right font-black text-xs ${
-              item.isFixed ? 'bg-white border-amber-400 text-amber-950 focus:border-amber-600 cursor-pointer' : 'bg-slate-100 border-slate-200 text-slate-600 cursor-not-allowed'
+            <input type="text" inputmode="decimal" value="${item.price.toFixed(2)}" onclick="this.select()" onchange="handlePriceInput(${idx}, this.value)" onkeydown="if(event.key==='Enter') { this.blur(); handlePriceInput(${idx}, this.value); }" class="w-full max-w-[65px] h-7 px-1 border rounded text-right font-black text-xs ${
+              item.isFixed ? 'bg-white border-amber-400 text-amber-950 focus:border-amber-600' : 'bg-slate-100 border-slate-200 text-slate-700 font-semibold'
             } outline-none" />
           </td>
           <td class="py-2 px-1.5 font-black text-slate-900 text-right text-xs whitespace-nowrap">
@@ -447,7 +504,7 @@
           <td class="py-2 px-1 text-right font-medium text-slate-500 text-xs whitespace-nowrap">${effectiveUnitNetto.toFixed(2)} zł</td>
           <td class="py-2 px-1 text-center">
             <div class="inline-flex items-center justify-center">
-              <input type="text" inputmode="numeric" value="${item.marginPercent}" onclick="this.select()" onchange="updateFieldAndRecalc(${idx}, 'marginPercent', this.value)" onkeydown="if(event.key==='Enter') { this.blur(); updateFieldAndRecalc(${idx}, 'marginPercent', this.value); }" class="w-9 h-6 text-center font-black text-amber-950 bg-white border border-amber-300 rounded outline-none text-xs" />
+              <input type="text" inputmode="numeric" value="${item.marginPercent}" onclick="this.select()" onchange="updateField(${idx}, 'marginPercent', this.value)" onkeydown="if(event.key==='Enter') { this.blur(); updateField(${idx}, 'marginPercent', this.value); }" class="w-9 h-6 text-center font-black text-amber-950 bg-white border border-amber-300 rounded outline-none text-xs" />
               <span class="text-[10px] font-bold text-amber-600 ml-0.5">%</span>
             </div>
           </td>
@@ -523,7 +580,13 @@
       });
     }
 
-    window.onload = () => loadTemplate('minionki');
+    // Odczyt z pamięci podręcznej po odświeżeniu, a jeśli pusto - załaduj świeży szablon Minionki
+    window.onload = () => {
+      const hasSaved = loadSavedState();
+      if (!hasSaved) {
+        loadFreshTemplate('minionki');
+      }
+    };
   </script>
 </body>
 </html>
