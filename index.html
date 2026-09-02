@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StandCalc FMCG PRO - Kalkulator cen standu dla grupy Zachód</title>
+  <title>StandCalc FMCG PRO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -12,6 +12,14 @@
   <meta name="theme-color" content="#0f172a" />
   <style>
     * { touch-action: manipulation; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .export-mode {
+      width: 1100px !important;
+      max-width: 1100px !important;
+      min-width: 1100px !important;
+      padding: 30px !important;
+      background: #ffffff !important;
+    }
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; }
@@ -26,7 +34,7 @@
       <div class="flex items-center space-x-2.5">
         <img src="favicon.svg" alt="StandCalc Logo" class="w-9 h-9 rounded-xl shadow border border-slate-700/60 p-0.5 bg-slate-900 object-contain" />
         <div>
-          <h1 class="text-base font-bold tracking-tight leading-tight">StandCalc FMCG PRO</h1>
+          <h1 class="text-base font-bold tracking-normal leading-tight">StandCalc FMCG PRO</h1>
           <span class="text-[10px] text-slate-400 block">Kalkulator cen standu dla grupy Zachód</span>
         </div>
       </div>
@@ -91,35 +99,34 @@
     </section>
 
     <!-- TABELA 1: Ceny Zakupu (Dla Faktury / Handlowca) -->
-    <div id="purchaseContainer" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+    <div id="purchaseContainer" class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
       <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
         <div>
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tabela 1 — Logistyka & Faktura</span>
-          <h2 class="text-base font-black text-slate-900" id="table1Title">Rozliczenie Standu Netto</h2>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">TABELA 1 &mdash; LOGISTYKA &amp; FAKTURA</span>
+          <h2 class="text-base font-black text-slate-900" id="table1Title">ROZLICZENIE STANDU NETTO</h2>
         </div>
         <div class="flex items-center gap-2 no-print">
           <button onclick="addRow()" class="bg-slate-800 active:bg-slate-700 text-white text-xs font-bold h-9 px-3 rounded-lg transition">
             + Dodaj półkę
           </button>
-          <button onclick="exportPNG('purchaseContainer', 'Rozliczenie_Faktury')" class="bg-slate-200 active:bg-slate-300 text-slate-800 text-xs font-bold h-9 px-3 rounded-lg transition">
+          <button onclick="exportCleanPNG('purchaseContainer', 'Rozliczenie_Faktury')" class="bg-slate-200 active:bg-slate-300 text-slate-800 text-xs font-bold h-9 px-3 rounded-lg transition">
             📷 Eksportuj Tabelę 1
           </button>
         </div>
       </div>
 
-      <!-- Tabela ze sztywnym podziałem kolumn dopasowanym do ekranu -->
-      <div class="w-full">
+      <div class="w-full overflow-hidden">
         <table class="w-full table-fixed text-left border-collapse">
           <thead>
-            <tr class="text-slate-500 border-b border-slate-200 text-[11px] font-bold uppercase bg-slate-50">
-              <th class="py-2 px-1.5 w-[6%] text-center">Półka</th>
-              <th class="py-2 px-1.5 w-[30%]">Asortyment</th>
-              <th class="py-2 px-1.5 w-[11%] text-center">Ilość</th>
-              <th class="py-2 px-1.5 w-[16%] text-center">Kod EAN</th>
-              <th class="py-2 px-1.5 w-[11%] text-center no-print">Tryb</th>
-              <th class="py-2 px-1.5 w-[13%] text-right">Cena Netto</th>
-              <th class="py-2 px-1.5 w-[13%] text-right">Wartość Netto</th>
-              <th class="py-2 px-0.5 w-[4%] text-center no-print"></th>
+            <tr class="text-slate-500 border-b border-slate-200 text-xs font-bold uppercase bg-slate-50">
+              <th class="py-2.5 px-2 w-[7%] text-center">PÓŁKA</th>
+              <th class="py-2.5 px-2 w-[34%]">ASORTYMENT</th>
+              <th class="py-2.5 px-2 w-[11%] text-center">ILOŚĆ</th>
+              <th class="py-2.5 px-2 w-[16%] text-center">KOD EAN</th>
+              <th class="py-2.5 px-2 w-[10%] text-center no-print">TRYB</th>
+              <th class="py-2.5 px-2 w-[11%] text-right">CENA NETTO</th>
+              <th class="py-2.5 px-2 w-[11%] text-right">WARTOŚĆ NETTO</th>
+              <th class="py-2.5 px-1 w-[4%] text-center no-print"></th>
             </tr>
           </thead>
           <tbody id="purchaseTableBody" class="divide-y divide-slate-100 text-xs font-medium"></tbody>
@@ -128,59 +135,59 @@
 
       <div class="border-t pt-3 grid grid-cols-3 gap-3 text-right">
         <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[10px] text-slate-400 font-bold uppercase">Łącznie Netto</span>
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">ŁĄCZNIE NETTO</span>
           <span class="text-lg font-black text-slate-900" id="summaryNetto">0.00 zł</span>
         </div>
         <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[10px] text-slate-400 font-bold uppercase">Podatek VAT</span>
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">PODATEK VAT</span>
           <span class="text-lg font-black text-slate-900" id="summaryVat">0.00 zł</span>
         </div>
         <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[10px] text-slate-400 font-bold uppercase">Wartość Faktury (Brutto)</span>
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">WARTOŚĆ FAKTURY (BRUTTO)</span>
           <span class="text-lg font-black text-blue-600" id="summaryBrutto">0.00 zł</span>
         </div>
       </div>
     </div>
 
     <!-- TABELA 2: Oferta dla Klienta / Kierownika Sklepu -->
-    <div id="retailContainer" class="bg-gradient-to-br from-white to-amber-50/30 p-4 rounded-xl shadow-sm border border-amber-300 space-y-3">
+    <div id="retailContainer" class="bg-white p-5 rounded-xl shadow-sm border border-amber-300 space-y-3">
       <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
         <div>
-          <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">Tabela 2 — Dla Kierownika Sklepu</span>
-          <h2 class="text-base font-black text-slate-900">Sugerowane Ceny Półkowe & Zysk Sklepu</h2>
+          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wide block mb-0.5">TABELA 2 &mdash; DLA KIEROWNIKA SKLEPU</span>
+          <h2 class="text-base font-black text-slate-900">Sugerowane Ceny Półkowe &amp; Zysk Sklepu</h2>
         </div>
         <div class="no-print">
-          <button onclick="exportPNG('retailContainer', 'Oferta_Dla_Sklepu')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-xs font-bold h-9 px-4 rounded-lg shadow transition">
+          <button onclick="exportCleanPNG('retailContainer', 'Oferta_Dla_Sklepu')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-xs font-bold h-9 px-4 rounded-lg shadow transition">
             📷 Pobierz Ofertę Sklepową (PNG)
           </button>
         </div>
       </div>
 
-      <div class="w-full">
+      <div class="w-full overflow-hidden">
         <table class="w-full table-fixed text-left border-collapse">
           <thead>
-            <tr class="text-slate-600 border-b border-amber-200 text-[11px] font-bold uppercase bg-amber-100/50">
-              <th class="py-2 px-1.5 w-[6%] text-center">Półka</th>
-              <th class="py-2 px-1.5 w-[34%]">Asortyment</th>
-              <th class="py-2 px-1.5 w-[10%] text-center">Ilość</th>
-              <th class="py-2 px-1.5 w-[14%] text-right">Zakup Netto</th>
-              <th class="py-2 px-1.5 w-[12%] text-center">Marża %</th>
-              <th class="py-2 px-1.5 w-[12%] text-right text-emerald-800">Suger. Półka</th>
-              <th class="py-2 px-1.5 w-[12%] text-right text-amber-950">Twój Zysk</th>
+            <tr class="text-slate-600 border-b border-amber-200 text-xs font-bold uppercase bg-amber-50">
+              <th class="py-2.5 px-2 w-[7%] text-center">PÓŁKA</th>
+              <th class="py-2.5 px-2 w-[35%]">ASORTYMENT</th>
+              <th class="py-2.5 px-2 w-[10%] text-center">ILOŚĆ</th>
+              <th class="py-2.5 px-2 w-[12%] text-right">ZAKUP NETTO</th>
+              <th class="py-2.5 px-2 w-[12%] text-center">MARŻA %</th>
+              <th class="py-2.5 px-2 w-[12%] text-right text-emerald-800">SUGER. PÓŁKA</th>
+              <th class="py-2.5 px-2 w-[12%] text-right text-amber-950">TWÓJ ZYSK</th>
             </tr>
           </thead>
           <tbody id="retailTableBody" class="divide-y divide-amber-100/60 text-xs font-medium"></tbody>
         </table>
       </div>
 
-      <div class="bg-slate-900 text-white p-3 rounded-lg flex items-center justify-between">
+      <div class="bg-slate-900 text-white p-3.5 rounded-lg flex items-center justify-between">
         <div>
-          <span class="text-[11px] uppercase font-bold text-amber-400 tracking-wider">Prognozowany Zysk Sklepu ze Standu</span>
-          <p class="text-[10px] text-slate-400">Wyliczone dla 100% rotacji asortymentu</p>
+          <span class="text-[11px] uppercase font-bold text-amber-400 tracking-wider block">PROGNOZOWANY ZYSK SKLEPU ZE STANDU</span>
+          <p class="text-[10px] text-slate-400">Wyliczono dla 100% rotacji asortymentu</p>
         </div>
         <div class="text-right">
           <span class="text-xl font-black text-emerald-400" id="totalShopProfit">+0.00 zł netto</span>
-          <span class="block text-[10px] text-slate-300 font-semibold" id="averageShopMargin">Średnia marża: 0%</span>
+          <span class="block text-[11px] text-slate-300 font-semibold mt-0.5" id="averageShopMargin">Średnia marża detaliczna: 0%</span>
         </div>
       </div>
     </div>
@@ -222,7 +229,7 @@
     function loadTemplate(key) {
       currentTemplateKey = key;
       const t = templates[key];
-      document.getElementById('table1Title').innerText = `ROZLICZENIE STANDU NETTO – ${t.name}`;
+      document.getElementById('table1Title').innerText = `ROZLICZENIE STANDU NETTO \u2013 ${t.name}`;
       document.getElementById('targetPrice').value = t.targetNetto.toFixed(2);
       const globalM = parseFloat(document.getElementById('globalMargin').value) || 25;
       shelves = JSON.parse(JSON.stringify(t.items)).map(item => ({
@@ -310,7 +317,6 @@
           allocatedGrosze += shelves[idx].lineTotalGrosze;
         }
 
-        // Algorytm domknięcia co do 1 grosza na ostatniej pozycji Auto
         const lastIdx = autoIndices[autoIndices.length - 1];
         const lastNeededGrosze = remainingBudgetGrosze - allocatedGrosze;
         const lastQty = shelves[lastIdx].qty;
@@ -326,7 +332,7 @@
           if (remainderGrosze !== 0) {
             const highQty = remainderGrosze;
             const lowQty = lastQty - remainderGrosze;
-            shelves[lastIdx].splitNote = `Domknięcie: ${lowQty} szt. × ${(baseLastGrosze/100).toFixed(2)} zł + ${highQty} szt. × ${((baseLastGrosze+1)/100).toFixed(2)} zł`;
+            shelves[lastIdx].splitNote = `Domknięcie: ${lowQty} szt. \u00d7 ${(baseLastGrosze/100).toFixed(2)} z\u0142 + ${highQty} szt. \u00d7 ${((baseLastGrosze+1)/100).toFixed(2)} z\u0142`;
           }
         } else {
           shelves[lastIdx].price = 0;
@@ -373,23 +379,23 @@
         totalShopProfitGrosze += Math.round(lineProfit * 100);
         totalRetailTurnoverGrosze += Math.round(shelfNetto * item.qty * 100);
 
-        // Tabela 1: Wiersz
+        // Tabela 1: Wiersz z czytelnym tekstem nazwy
         const pTr = document.createElement('tr');
         pTr.className = "hover:bg-slate-50";
         pTr.innerHTML = `
-          <td class="py-2 px-1 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
-          <td class="py-2 px-1 overflow-hidden">
-            <textarea rows="1" oninput="updateField(${idx}, 'name', this.value); this.style.height='auto'; this.style.height=this.scrollHeight+'px';" class="w-full bg-transparent border-0 font-bold text-slate-900 text-xs outline-none resize-none overflow-hidden leading-tight">${item.name}</textarea>
-            ${item.splitNote ? `<span class="block text-[9px] text-blue-700 font-semibold leading-none mt-0.5">${item.splitNote}</span>` : ''}
+          <td class="py-2.5 px-2 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+          <td class="py-2.5 px-2">
+            <div contenteditable="true" onblur="updateField(${idx}, 'name', this.innerText)" class="font-bold text-slate-900 text-xs leading-snug outline-none hover:bg-slate-100 rounded px-1 py-0.5">${item.name}</div>
+            ${item.splitNote ? `<div class="text-[10px] text-blue-700 font-semibold leading-tight mt-0.5 px-1">${item.splitNote}</div>` : ''}
           </td>
-          <td class="py-2 px-1 text-center">
+          <td class="py-2.5 px-2 text-center">
             <input type="number" inputmode="numeric" value="${item.qty}" min="0" oninput="updateField(${idx}, 'qty', this.value)" class="w-14 h-8 px-1 border border-slate-300 rounded text-center font-black text-slate-900 text-xs outline-none focus:border-blue-500" />
           </td>
-          <td class="py-2 px-1 text-center">
-            <input type="text" inputmode="numeric" value="${item.ean}" placeholder="EAN" oninput="updateField(${idx}, 'ean', this.value)" class="w-28 h-8 font-mono text-[10px] text-slate-500 text-center bg-transparent border border-dashed border-transparent hover:border-slate-300 focus:border-blue-500 rounded outline-none" />
+          <td class="py-2.5 px-2 text-center font-mono text-[11px] text-slate-500">
+            ${item.ean || '-'}
           </td>
-          <td class="py-2 px-1 text-center no-print">
-            <button onclick="toggleLock(${idx})" class="h-8 px-2 rounded-lg border font-bold text-[11px] transition ${
+          <td class="py-2.5 px-2 text-center no-print">
+            <button onclick="toggleLock(${idx})" class="h-8 px-2.5 rounded-lg border font-bold text-[11px] transition ${
               item.isFixed 
                 ? 'bg-amber-100 text-amber-900 border-amber-300' 
                 : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -397,15 +403,15 @@
               ${item.isFixed ? '🔒 Stała' : '🔓 Auto'}
             </button>
           </td>
-          <td class="py-2 px-1 text-right">
+          <td class="py-2.5 px-2 text-right">
             <input type="number" step="0.01" inputmode="decimal" value="${item.price.toFixed(2)}" ${item.isFixed ? '' : 'disabled'} oninput="updateField(${idx}, 'price', this.value)" class="w-20 h-8 px-1.5 border rounded text-right font-black text-xs ${
               item.isFixed ? 'bg-white border-amber-400 text-amber-950 focus:border-amber-600' : 'bg-slate-100 border-slate-200 text-slate-600'
             } outline-none" />
           </td>
-          <td class="py-2 px-1 font-black text-slate-900 text-right text-xs">
+          <td class="py-2.5 px-2 font-black text-slate-900 text-right text-xs">
             ${(lineTotalGrosze / 100).toFixed(2)} zł
           </td>
-          <td class="py-2 px-0.5 text-center no-print">
+          <td class="py-2.5 px-1 text-center no-print">
             <button onclick="removeRow(${idx})" class="text-slate-300 hover:text-rose-600 font-bold text-sm">✕</button>
           </td>
         `;
@@ -415,20 +421,20 @@
         const rTr = document.createElement('tr');
         rTr.className = "hover:bg-amber-50/50";
         rTr.innerHTML = `
-          <td class="py-2 px-1 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
-          <td class="py-2 px-1 font-bold text-slate-800 text-xs leading-tight">${item.name}</td>
-          <td class="py-2 px-1 text-center font-bold text-slate-700 text-xs">${item.qty} szt.</td>
-          <td class="py-2 px-1 text-right font-medium text-slate-500 text-xs">${effectiveUnitNetto.toFixed(2)} zł</td>
-          <td class="py-2 px-1 text-center">
+          <td class="py-2.5 px-2 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+          <td class="py-2.5 px-2 font-bold text-slate-800 text-xs leading-snug">${item.name}</td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700 text-xs">${item.qty} szt.</td>
+          <td class="py-2.5 px-2 text-right font-medium text-slate-500 text-xs">${effectiveUnitNetto.toFixed(2)} zł</td>
+          <td class="py-2.5 px-2 text-center">
             <input type="number" inputmode="numeric" value="${item.marginPercent}" min="0" max="95" oninput="updateField(${idx}, 'marginPercent', this.value)" class="w-12 h-7 px-0.5 text-center font-black text-amber-950 bg-white border border-amber-300 rounded outline-none text-xs" />
             <span class="text-[10px] font-bold text-amber-600">%</span>
           </td>
-          <td class="py-2 px-1 text-right">
+          <td class="py-2.5 px-2 text-right">
             <span class="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
               ${shelfGross.toFixed(2)} zł
             </span>
           </td>
-          <td class="py-2 px-1 text-right font-black text-amber-950 text-xs">
+          <td class="py-2.5 px-2 text-right font-black text-amber-950 text-xs">
             +${lineProfit.toFixed(2)} zł
           </td>
         `;
@@ -468,21 +474,34 @@
       }
     }
 
-    function exportPNG(containerId, filePrefix) {
+    function exportCleanPNG(containerId, filePrefix) {
       const element = document.getElementById(containerId);
       const buttons = element.querySelectorAll('.no-print');
       buttons.forEach(b => b.style.display = 'none');
 
-      html2canvas(element, { scale: 2 }).then(canvas => {
+      // Wymuszenie stałej szerokości na czas zrzutu, by uniknąć ścięcia
+      element.classList.add('export-mode');
+
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: 1200
+      }).then(canvas => {
+        element.classList.remove('export-mode');
         buttons.forEach(b => b.style.display = '');
+
         const link = document.createElement('a');
         link.download = `${filePrefix}_${new Date().toISOString().slice(0, 10)}.png`;
-        link.href = canvas.toDataURL();
+        link.href = canvas.toDataURL('image/png');
         link.click();
+      }).catch(err => {
+        element.classList.remove('export-mode');
+        buttons.forEach(b => b.style.display = '');
+        console.error(err);
       });
     }
 
-    // Start od szablonu Minionki
     window.onload = () => loadTemplate('minionki');
   </script>
 </body>
