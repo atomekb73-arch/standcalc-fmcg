@@ -14,10 +14,10 @@
     * { touch-action: manipulation; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .export-mode {
-      width: 1100px !important;
-      max-width: 1100px !important;
-      min-width: 1100px !important;
-      padding: 30px !important;
+      width: 1050px !important;
+      max-width: 1050px !important;
+      min-width: 1050px !important;
+      padding: 24px !important;
       background: #ffffff !important;
     }
     @media print {
@@ -26,47 +26,45 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 antialiased min-h-screen pb-12 select-none">
+<body class="bg-slate-100 text-slate-900 antialiased min-h-screen pb-12 select-none overflow-x-hidden">
 
-  <!-- Górny pasek z szablonami -->
   <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 no-print">
-    <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
-      <div class="flex items-center space-x-2.5">
-        <img src="favicon.svg" alt="StandCalc Logo" class="w-9 h-9 rounded-xl shadow border border-slate-700/60 p-0.5 bg-slate-900 object-contain" />
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <img src="favicon.svg" alt="StandCalc Logo" class="w-8 h-8 rounded-xl shadow border border-slate-700/60 p-0.5 bg-slate-900 object-contain" />
         <div>
-          <h1 class="text-base font-bold tracking-normal leading-tight">StandCalc FMCG PRO</h1>
+          <h1 class="text-sm sm:text-base font-bold tracking-tight leading-tight">StandCalc FMCG PRO</h1>
           <span class="text-[10px] text-slate-400 block">Kalkulator cen standu dla grupy Zachód</span>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="loadTemplate('minionki')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg shadow transition">
-          🍌 MINIONKI (7 półek / 265 szt.)
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button onclick="loadTemplate('minionki')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
+          🍌 MINIONKI (265 szt.)
         </button>
-        <button onclick="loadTemplate('psi-patrol')" class="bg-blue-600 active:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
-          🐾 PSI PATROL (6 półek / 179 szt.)
+        <button onclick="loadTemplate('psi-patrol')" class="bg-blue-600 active:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2.5 py-2 rounded-lg shadow transition">
+          🐾 PSI PATROL (179 szt.)
         </button>
-        <button onclick="clearAll()" class="bg-slate-800 active:bg-slate-700 text-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition">
+        <button onclick="clearAll()" class="bg-slate-800 active:bg-slate-700 text-slate-300 text-[11px] sm:text-xs font-medium px-2.5 py-2 rounded-lg transition">
           Wyczyść
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-4">
+  <main class="max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-4 space-y-4">
 
-    <!-- Pulpit sterujący -->
-    <section class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 grid grid-cols-5 gap-2.5 no-print">
+    <section class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 no-print">
       <div>
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Stand Netto (zł)</label>
         <div class="relative">
-          <input type="number" id="targetPrice" value="740.00" step="0.01" inputmode="decimal" oninput="calculate()" class="w-full h-10 pl-2 pr-6 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-black text-slate-900 text-base outline-none" />
-          <span class="absolute right-2 top-2.5 text-slate-400 font-bold text-xs">zł</span>
+          <input type="number" id="targetPrice" value="740.00" step="0.01" inputmode="decimal" oninput="calculate()" class="w-full h-9 pl-2 pr-6 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-black text-slate-900 text-sm outline-none" />
+          <span class="absolute right-2 top-2 text-slate-400 font-bold text-xs">zł</span>
         </div>
       </div>
 
       <div>
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Stawka VAT</label>
-        <select id="vatRate" onchange="calculate()" class="w-full h-10 px-1 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-bold text-slate-800 bg-white outline-none text-xs">
+        <select id="vatRate" onchange="calculate()" class="w-full h-9 px-1.5 border-2 border-slate-300 focus:border-blue-600 rounded-lg font-bold text-slate-800 bg-white outline-none text-xs">
           <option value="0.05" selected>5% (pieczywo)</option>
           <option value="0.23">23% (standard)</option>
           <option value="0.08">8%</option>
@@ -77,40 +75,39 @@
       <div>
         <label class="block text-[10px] font-bold uppercase text-blue-600 mb-1">Marża hurtowa</label>
         <div class="relative">
-          <input type="number" id="globalMargin" value="25" min="0" max="90" step="1" inputmode="numeric" oninput="applyGlobalMargin(this.value)" class="w-full h-10 pl-2 pr-6 border-2 border-blue-400 bg-blue-50/50 focus:border-blue-600 rounded-lg font-black text-blue-900 text-base outline-none" />
-          <span class="absolute right-2 top-2.5 text-blue-400 font-bold text-xs">%</span>
+          <input type="number" id="globalMargin" value="25" min="0" max="90" step="1" inputmode="numeric" oninput="applyGlobalMargin(this.value)" class="w-full h-9 pl-2 pr-6 border-2 border-blue-400 bg-blue-50/50 focus:border-blue-600 rounded-lg font-black text-blue-900 text-sm outline-none" />
+          <span class="absolute right-2 top-2 text-blue-400 font-bold text-xs">%</span>
         </div>
       </div>
 
       <div>
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Suma sztuk</label>
-        <div class="h-10 px-2 bg-slate-50 border-2 border-slate-200 rounded-lg font-black text-base text-slate-800 flex items-center justify-center" id="totalQtyBadge">
+        <div class="h-9 px-2 bg-slate-50 border-2 border-slate-200 rounded-lg font-black text-sm text-slate-800 flex items-center justify-center" id="totalQtyBadge">
           0 szt.
         </div>
       </div>
 
-      <div>
+      <div class="col-span-2 sm:col-span-1">
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Bilans standu</label>
-        <div id="balanceCard" class="h-10 px-2 rounded-lg border-2 font-bold text-xs flex flex-col justify-center items-center bg-emerald-50 border-emerald-400 text-emerald-800 text-center leading-tight">
-          <span id="balanceStatus">Zbilansowano</span>
-          <span id="balanceDiff" class="font-mono text-[11px] font-extrabold">0.00 zł</span>
+        <div id="balanceCard" class="h-9 px-2 rounded-lg border-2 font-bold text-xs flex items-center justify-between bg-emerald-50 border-emerald-400 text-emerald-800">
+          <span id="balanceStatus" class="truncate mr-1">Zbilansowano</span>
+          <span id="balanceDiff" class="font-mono text-[11px] font-extrabold whitespace-nowrap">0.00 zł</span>
         </div>
       </div>
     </section>
 
-    <!-- TABELA 1: Ceny Zakupu (Dla Faktury / Handlowca) -->
-    <div id="purchaseContainer" class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-        <div>
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">TABELA 1 &mdash; LOGISTYKA &amp; FAKTURA</span>
-          <h2 class="text-base font-black text-slate-900" id="table1Title">ROZLICZENIE STANDU NETTO</h2>
+    <div id="purchaseContainer" class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 space-y-3 overflow-hidden">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+        <div class="min-w-0 pr-2">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TABELA 1 &mdash; LOGISTYKA &amp; FAKTURA</span>
+          <h2 class="text-xs sm:text-sm font-black text-slate-900 truncate" id="table1Title">ROZLICZENIE STANDU NETTO</h2>
         </div>
-        <div class="flex items-center gap-2 no-print">
-          <button onclick="addRow()" class="bg-slate-800 active:bg-slate-700 text-white text-xs font-bold h-9 px-3 rounded-lg transition">
-            + Dodaj półkę
+        <div class="flex items-center gap-1.5 no-print shrink-0">
+          <button onclick="addRow()" class="bg-slate-800 active:bg-slate-700 text-white text-[11px] font-bold h-8 px-2.5 rounded-lg transition">
+            + Dodaj
           </button>
-          <button onclick="exportCleanPNG('purchaseContainer', 'Rozliczenie_Faktury')" class="bg-slate-200 active:bg-slate-300 text-slate-800 text-xs font-bold h-9 px-3 rounded-lg transition">
-            📷 Eksportuj Tabelę 1
+          <button onclick="exportCleanPNG('purchaseContainer', 'Rozliczenie_Faktury')" class="bg-slate-200 active:bg-slate-300 text-slate-800 text-[11px] font-bold h-8 px-2.5 rounded-lg transition">
+            📷 Eksportuj
           </button>
         </div>
       </div>
@@ -118,47 +115,46 @@
       <div class="w-full overflow-hidden">
         <table class="w-full table-fixed text-left border-collapse">
           <thead>
-            <tr class="text-slate-500 border-b border-slate-200 text-xs font-bold uppercase bg-slate-50">
-              <th class="py-2.5 px-2 w-[7%] text-center">PÓŁKA</th>
-              <th class="py-2.5 px-2 w-[34%]">ASORTYMENT</th>
-              <th class="py-2.5 px-2 w-[11%] text-center">ILOŚĆ</th>
-              <th class="py-2.5 px-2 w-[16%] text-center">KOD EAN</th>
-              <th class="py-2.5 px-2 w-[10%] text-center no-print">TRYB</th>
-              <th class="py-2.5 px-2 w-[11%] text-right">CENA NETTO</th>
-              <th class="py-2.5 px-2 w-[11%] text-right">WARTOŚĆ NETTO</th>
-              <th class="py-2.5 px-1 w-[4%] text-center no-print"></th>
+            <tr class="text-slate-500 border-b border-slate-200 text-[10px] sm:text-[11px] font-bold uppercase bg-slate-50">
+              <th class="py-2 px-1 w-[6%] text-center">Półka</th>
+              <th class="py-2 px-1.5 w-[36%]">Asortyment</th>
+              <th class="py-2 px-1 w-[10%] text-center">Ilość</th>
+              <th class="py-2 px-1 w-[15%] text-center">Kod EAN</th>
+              <th class="py-2 px-1 w-[10%] text-center no-print">Tryb</th>
+              <th class="py-2 px-1 w-[11%] text-right">Cena</th>
+              <th class="py-2 px-1.5 w-[12%] text-right">Wartość</th>
+              <th class="py-2 px-0.5 w-[4%] text-center no-print"></th>
             </tr>
           </thead>
           <tbody id="purchaseTableBody" class="divide-y divide-slate-100 text-xs font-medium"></tbody>
         </table>
       </div>
 
-      <div class="border-t pt-3 grid grid-cols-3 gap-3 text-right">
-        <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[11px] text-slate-400 font-bold uppercase">ŁĄCZNIE NETTO</span>
-          <span class="text-lg font-black text-slate-900" id="summaryNetto">0.00 zł</span>
+      <div class="border-t pt-2.5 grid grid-cols-3 gap-2 text-right">
+        <div class="bg-slate-50 p-2 rounded-lg text-left overflow-hidden">
+          <span class="block text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase truncate">ŁĄCZNIE NETTO</span>
+          <span class="text-xs sm:text-base font-black text-slate-900 truncate block" id="summaryNetto">0.00 zł</span>
         </div>
-        <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[11px] text-slate-400 font-bold uppercase">PODATEK VAT</span>
-          <span class="text-lg font-black text-slate-900" id="summaryVat">0.00 zł</span>
+        <div class="bg-slate-50 p-2 rounded-lg text-left overflow-hidden">
+          <span class="block text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase truncate">PODATEK VAT</span>
+          <span class="text-xs sm:text-base font-black text-slate-900 truncate block" id="summaryVat">0.00 zł</span>
         </div>
-        <div class="bg-slate-50 p-2.5 rounded-lg text-left">
-          <span class="block text-[11px] text-slate-400 font-bold uppercase">WARTOŚĆ FAKTURY (BRUTTO)</span>
-          <span class="text-lg font-black text-blue-600" id="summaryBrutto">0.00 zł</span>
+        <div class="bg-slate-50 p-2 rounded-lg text-left overflow-hidden">
+          <span class="block text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase truncate">FAKTURA BRUTTO</span>
+          <span class="text-xs sm:text-base font-black text-blue-600 truncate block" id="summaryBrutto">0.00 zł</span>
         </div>
       </div>
     </div>
 
-    <!-- TABELA 2: Oferta dla Klienta / Kierownika Sklepu -->
-    <div id="retailContainer" class="bg-white p-5 rounded-xl shadow-sm border border-amber-300 space-y-3">
-      <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
-        <div>
-          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wide block mb-0.5">TABELA 2 &mdash; DLA KIEROWNIKA SKLEPU</span>
-          <h2 class="text-base font-black text-slate-900">Sugerowane Ceny Półkowe &amp; Zysk Sklepu</h2>
+    <div id="retailContainer" class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-300 space-y-3 overflow-hidden">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-2">
+        <div class="min-w-0 pr-2">
+          <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">TABELA 2 &mdash; DLA KIEROWNIKA SKLEPU</span>
+          <h2 class="text-xs sm:text-sm font-black text-slate-900 truncate">Sugerowane Ceny Półkowe &amp; Zysk Sklepu</h2>
         </div>
-        <div class="no-print">
-          <button onclick="exportCleanPNG('retailContainer', 'Oferta_Dla_Sklepu')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-xs font-bold h-9 px-4 rounded-lg shadow transition">
-            📷 Pobierz Ofertę Sklepową (PNG)
+        <div class="no-print shrink-0">
+          <button onclick="exportCleanPNG('retailContainer', 'Oferta_Dla_Sklepu')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-[11px] font-bold h-8 px-3 rounded-lg shadow transition">
+            📷 Pobierz Ofertę (PNG)
           </button>
         </div>
       </div>
@@ -166,28 +162,28 @@
       <div class="w-full overflow-hidden">
         <table class="w-full table-fixed text-left border-collapse">
           <thead>
-            <tr class="text-slate-600 border-b border-amber-200 text-xs font-bold uppercase bg-amber-50">
-              <th class="py-2.5 px-2 w-[7%] text-center">PÓŁKA</th>
-              <th class="py-2.5 px-2 w-[35%]">ASORTYMENT</th>
-              <th class="py-2.5 px-2 w-[10%] text-center">ILOŚĆ</th>
-              <th class="py-2.5 px-2 w-[12%] text-right">ZAKUP NETTO</th>
-              <th class="py-2.5 px-2 w-[12%] text-center">MARŻA %</th>
-              <th class="py-2.5 px-2 w-[12%] text-right text-emerald-800">SUGER. PÓŁKA</th>
-              <th class="py-2.5 px-2 w-[12%] text-right text-amber-950">TWÓJ ZYSK</th>
+            <tr class="text-slate-600 border-b border-amber-200 text-[10px] sm:text-[11px] font-bold uppercase bg-amber-50">
+              <th class="py-2 px-1 w-[6%] text-center">Półka</th>
+              <th class="py-2 px-1.5 w-[38%]">Asortyment</th>
+              <th class="py-2 px-1 w-[9%] text-center">Ilość</th>
+              <th class="py-2 px-1 w-[11%] text-right">Zakup</th>
+              <th class="py-2 px-1 w-[11%] text-center">Marża</th>
+              <th class="py-2 px-1 w-[12%] text-right text-emerald-800">Półka</th>
+              <th class="py-2 px-1.5 w-[13%] text-right text-amber-950">Twój Zysk</th>
             </tr>
           </thead>
           <tbody id="retailTableBody" class="divide-y divide-amber-100/60 text-xs font-medium"></tbody>
         </table>
       </div>
 
-      <div class="bg-slate-900 text-white p-3.5 rounded-lg flex items-center justify-between">
-        <div>
-          <span class="text-[11px] uppercase font-bold text-amber-400 tracking-wider block">PROGNOZOWANY ZYSK SKLEPU ZE STANDU</span>
-          <p class="text-[10px] text-slate-400">Wyliczono dla 100% rotacji asortymentu</p>
+      <div class="bg-slate-900 text-white p-3 rounded-lg flex items-center justify-between">
+        <div class="min-w-0 pr-2">
+          <span class="text-[10px] sm:text-[11px] uppercase font-bold text-amber-400 tracking-wider block truncate">PROGNOZOWANY ZYSK SKLEPU ZE STANDU</span>
+          <p class="text-[9px] sm:text-[10px] text-slate-400">Wyliczono dla 100% rotacji asortymentu</p>
         </div>
-        <div class="text-right">
-          <span class="text-xl font-black text-emerald-400" id="totalShopProfit">+0.00 zł netto</span>
-          <span class="block text-[11px] text-slate-300 font-semibold mt-0.5" id="averageShopMargin">Średnia marża detaliczna: 0%</span>
+        <div class="text-right shrink-0">
+          <span class="text-sm sm:text-base font-black text-emerald-400" id="totalShopProfit">+0.00 zł netto</span>
+          <span class="block text-[9px] sm:text-[10px] text-slate-300 font-semibold" id="averageShopMargin">Średnia marża: 0%</span>
         </div>
       </div>
     </div>
@@ -379,23 +375,23 @@
         totalShopProfitGrosze += Math.round(lineProfit * 100);
         totalRetailTurnoverGrosze += Math.round(shelfNetto * item.qty * 100);
 
-        // Tabela 1: Wiersz z czytelnym tekstem nazwy
+        // Tabela 1: Wiersz dopasowany do szerokości komórki
         const pTr = document.createElement('tr');
         pTr.className = "hover:bg-slate-50";
         pTr.innerHTML = `
-          <td class="py-2.5 px-2 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
-          <td class="py-2.5 px-2">
-            <div contenteditable="true" onblur="updateField(${idx}, 'name', this.innerText)" class="font-bold text-slate-900 text-xs leading-snug outline-none hover:bg-slate-100 rounded px-1 py-0.5">${item.name}</div>
-            ${item.splitNote ? `<div class="text-[10px] text-blue-700 font-semibold leading-tight mt-0.5 px-1">${item.splitNote}</div>` : ''}
+          <td class="py-2 px-1 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+          <td class="py-2 px-1.5 overflow-hidden">
+            <div contenteditable="true" onblur="updateField(${idx}, 'name', this.innerText)" class="font-bold text-slate-900 text-xs leading-snug outline-none break-words">${item.name}</div>
+            ${item.splitNote ? `<div class="text-[9px] text-blue-700 font-semibold leading-tight mt-0.5 break-words">${item.splitNote}</div>` : ''}
           </td>
-          <td class="py-2.5 px-2 text-center">
-            <input type="number" inputmode="numeric" value="${item.qty}" min="0" oninput="updateField(${idx}, 'qty', this.value)" class="w-14 h-8 px-1 border border-slate-300 rounded text-center font-black text-slate-900 text-xs outline-none focus:border-blue-500" />
+          <td class="py-2 px-1 text-center">
+            <input type="number" inputmode="numeric" value="${item.qty}" min="0" oninput="updateField(${idx}, 'qty', this.value)" class="w-full max-w-[50px] h-7 px-1 border border-slate-300 rounded text-center font-black text-slate-900 text-xs outline-none focus:border-blue-500" />
           </td>
-          <td class="py-2.5 px-2 text-center font-mono text-[11px] text-slate-500">
+          <td class="py-2 px-1 text-center font-mono text-[10px] text-slate-500 truncate">
             ${item.ean || '-'}
           </td>
-          <td class="py-2.5 px-2 text-center no-print">
-            <button onclick="toggleLock(${idx})" class="h-8 px-2.5 rounded-lg border font-bold text-[11px] transition ${
+          <td class="py-2 px-1 text-center no-print">
+            <button onclick="toggleLock(${idx})" class="h-7 px-1.5 rounded-lg border font-bold text-[10px] transition ${
               item.isFixed 
                 ? 'bg-amber-100 text-amber-900 border-amber-300' 
                 : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -403,15 +399,15 @@
               ${item.isFixed ? '🔒 Stała' : '🔓 Auto'}
             </button>
           </td>
-          <td class="py-2.5 px-2 text-right">
-            <input type="number" step="0.01" inputmode="decimal" value="${item.price.toFixed(2)}" ${item.isFixed ? '' : 'disabled'} oninput="updateField(${idx}, 'price', this.value)" class="w-20 h-8 px-1.5 border rounded text-right font-black text-xs ${
+          <td class="py-2 px-1 text-right">
+            <input type="number" step="0.01" inputmode="decimal" value="${item.price.toFixed(2)}" ${item.isFixed ? '' : 'disabled'} oninput="updateField(${idx}, 'price', this.value)" class="w-full max-w-[65px] h-7 px-1 border rounded text-right font-black text-xs ${
               item.isFixed ? 'bg-white border-amber-400 text-amber-950 focus:border-amber-600' : 'bg-slate-100 border-slate-200 text-slate-600'
             } outline-none" />
           </td>
-          <td class="py-2.5 px-2 font-black text-slate-900 text-right text-xs">
+          <td class="py-2 px-1.5 font-black text-slate-900 text-right text-xs whitespace-nowrap">
             ${(lineTotalGrosze / 100).toFixed(2)} zł
           </td>
-          <td class="py-2.5 px-1 text-center no-print">
+          <td class="py-2 px-0.5 text-center no-print">
             <button onclick="removeRow(${idx})" class="text-slate-300 hover:text-rose-600 font-bold text-sm">✕</button>
           </td>
         `;
@@ -421,20 +417,22 @@
         const rTr = document.createElement('tr');
         rTr.className = "hover:bg-amber-50/50";
         rTr.innerHTML = `
-          <td class="py-2.5 px-2 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
-          <td class="py-2.5 px-2 font-bold text-slate-800 text-xs leading-snug">${item.name}</td>
-          <td class="py-2.5 px-2 text-center font-bold text-slate-700 text-xs">${item.qty} szt.</td>
-          <td class="py-2.5 px-2 text-right font-medium text-slate-500 text-xs">${effectiveUnitNetto.toFixed(2)} zł</td>
-          <td class="py-2.5 px-2 text-center">
-            <input type="number" inputmode="numeric" value="${item.marginPercent}" min="0" max="95" oninput="updateField(${idx}, 'marginPercent', this.value)" class="w-12 h-7 px-0.5 text-center font-black text-amber-950 bg-white border border-amber-300 rounded outline-none text-xs" />
-            <span class="text-[10px] font-bold text-amber-600">%</span>
+          <td class="py-2 px-1 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+          <td class="py-2 px-1.5 font-bold text-slate-800 text-xs leading-snug break-words">${item.name}</td>
+          <td class="py-2 px-1 text-center font-bold text-slate-700 text-xs whitespace-nowrap">${item.qty} szt.</td>
+          <td class="py-2 px-1 text-right font-medium text-slate-500 text-xs whitespace-nowrap">${effectiveUnitNetto.toFixed(2)} zł</td>
+          <td class="py-2 px-1 text-center">
+            <div class="inline-flex items-center justify-center">
+              <input type="number" inputmode="numeric" value="${item.marginPercent}" min="0" max="95" oninput="updateField(${idx}, 'marginPercent', this.value)" class="w-9 h-6 text-center font-black text-amber-950 bg-white border border-amber-300 rounded outline-none text-xs" />
+              <span class="text-[10px] font-bold text-amber-600 ml-0.5">%</span>
+            </div>
           </td>
-          <td class="py-2.5 px-2 text-right">
-            <span class="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+          <td class="py-2 px-1 text-right whitespace-nowrap">
+            <span class="text-[11px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded">
               ${shelfGross.toFixed(2)} zł
             </span>
           </td>
-          <td class="py-2.5 px-2 text-right font-black text-amber-950 text-xs">
+          <td class="py-2 px-1.5 text-right font-black text-amber-950 text-xs whitespace-nowrap">
             +${lineProfit.toFixed(2)} zł
           </td>
         `;
@@ -453,22 +451,22 @@
       document.getElementById('totalShopProfit').innerText = `+${(totalShopProfitGrosze / 100).toFixed(2)} zł netto`;
 
       const avgMargin = totalRetailTurnoverGrosze > 0 ? (totalShopProfitGrosze / totalRetailTurnoverGrosze) * 100 : 0;
-      document.getElementById('averageShopMargin').innerText = `Średnia marża detaliczna: ${avgMargin.toFixed(1)}%`;
+      document.getElementById('averageShopMargin').innerText = `Średnia marża: ${avgMargin.toFixed(1)}%`;
 
       const balanceCard = document.getElementById('balanceCard');
       const balanceStatus = document.getElementById('balanceStatus');
       const balanceDiff = document.getElementById('balanceDiff');
 
       if (remainingBudget < 0) {
-        balanceCard.className = "h-10 px-2 rounded-lg border-2 font-bold text-xs flex flex-col justify-center items-center bg-rose-50 border-rose-300 text-rose-800 text-center";
+        balanceCard.className = "h-9 px-2 rounded-lg border-2 font-bold text-xs flex items-center justify-between bg-rose-50 border-rose-300 text-rose-800";
         balanceStatus.innerText = "Błąd kwoty!";
-        balanceDiff.innerText = `Przekroczono o ${Math.abs(remainingBudget).toFixed(2)} zł`;
+        balanceDiff.innerText = `+${Math.abs(remainingBudget).toFixed(2)} zł`;
       } else if (diffGrosze === 0) {
-        balanceCard.className = "h-10 px-2 rounded-lg border-2 font-bold text-xs flex flex-col justify-center items-center bg-emerald-50 border-emerald-400 text-emerald-800 text-center";
+        balanceCard.className = "h-9 px-2 rounded-lg border-2 font-bold text-xs flex items-center justify-between bg-emerald-50 border-emerald-400 text-emerald-800";
         balanceStatus.innerText = "Zbilansowano";
         balanceDiff.innerText = `${actualSumNetto.toFixed(2)} zł`;
       } else {
-        balanceCard.className = "h-10 px-2 rounded-lg border-2 font-bold text-xs flex flex-col justify-center items-center bg-amber-50 border-amber-300 text-amber-800 text-center";
+        balanceCard.className = "h-9 px-2 rounded-lg border-2 font-bold text-xs flex items-center justify-between bg-amber-50 border-amber-300 text-amber-800";
         balanceStatus.innerText = "Różnica";
         balanceDiff.innerText = `${diffGrosze > 0 ? '+' : ''}${(diffGrosze / 100).toFixed(2)} zł`;
       }
@@ -479,14 +477,13 @@
       const buttons = element.querySelectorAll('.no-print');
       buttons.forEach(b => b.style.display = 'none');
 
-      // Wymuszenie stałej szerokości na czas zrzutu, by uniknąć ścięcia
       element.classList.add('export-mode');
 
       html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: 1200
+        windowWidth: 1100
       }).then(canvas => {
         element.classList.remove('export-mode');
         buttons.forEach(b => b.style.display = '');
