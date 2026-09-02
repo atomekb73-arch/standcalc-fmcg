@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kalkulator ceny standu dla grupy Zachód</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { touch-action: manipulation; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased min-h-screen pb-16 select-none">
+
+  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 no-print">
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">📊</span>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight leading-none">Kalkulator ceny standu dla grupy Zachód</h1>
+          <span class="text-xs text-slate-400">Narzędzie rozliczeniowe i ofertowe FMCG</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="loadTemplate('minionki')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-sm font-bold px-4 py-2.5 rounded-xl shadow transition">
+          🍌 MINIONKI (7 półek / 265 szt.)
+        </button>
+        <button onclick="loadTemplate('psi-patrol')" class="bg-blue-600 active:bg-blue-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow transition">
+          🐾 PSI PATROL (6 półek / 179 szt.)
+        </button>
+        <button onclick="clearAll()" class="bg-slate-800 active:bg-slate-700 text-slate-300 text-sm font-medium px-4 py-2.5 rounded-xl transition">
+          Wyczyść
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-5 space-y-6">
+
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-5 gap-4 no-print">
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Stand Netto (zł)</label>
+        <div class="relative">
+          <input type="number" id="targetPrice" value="740.00" step="0.01" min="0" inputmode="decimal" oninput="calculate()" class="w-full h-12 pl-3 pr-8 border-2 border-slate-300 focus:border-blue-600 rounded-xl font-black text-slate-900 text-lg outline-none" />
+          <span class="absolute right-3 top-3 text-slate-400 font-bold text-xs">zł</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Stawka VAT</label>
+        <select id="vatRate" onchange="calculate()" class="w-full h-12 px-2 border-2 border-slate-300 focus:border-blue-600 rounded-xl font-bold text-slate-800 bg-white outline-none text-sm">
+          <option value="0.05" selected>5% (pieczywo / przekąski)</option>
+          <option value="0.23">23% (standard)</option>
+          <option value="0.08">8%</option>
+          <option value="0.00">0%</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-blue-600 mb-1">Marża hurtowa sklepu</label>
+        <div class="relative">
+          <input type="number" id="globalMargin" value="25" min="0" max="90" step="1" inputmode="numeric" oninput="applyGlobalMargin(this.value)" class="w-full h-12 pl-3 pr-8 border-2 border-blue-400 bg-blue-50/50 focus:border-blue-600 rounded-xl font-black text-blue-900 text-lg outline-none" />
+          <span class="absolute right-3 top-3 text-blue-400 font-bold text-sm">%</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Suma sztuk</label>
+        <div class="h-12 px-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-black text-xl text-slate-800 flex items-center" id="totalQtyBadge">
+          0 szt.
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Bilans standu</label>
+        <div id="balanceCard" class="h-12 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-between bg-emerald-50 border-emerald-300 text-emerald-800">
+          <span id="balanceStatus">Zbilansowano</span>
+          <span id="balanceDiff" class="font-mono text-xs">0.00 zł</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="purchaseContainer" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tabela 1 — Logistyka & Faktura</span>
+          <h2 class="text-lg font-black text-slate-900" id="standTitle">Rozliczenie Standu Netto</h2>
+        </div>
+        <div class="flex items-center gap-3 no-print">
+          <button onclick="addRow()" class="bg-slate-800 active:bg-slate-700 text-white text-xs font-bold h-10 px-4 rounded-xl transition">
+            + Dodaj półkę
+          </button>
+          <button onclick="exportPNG('purchaseContainer', 'Rozliczenie_Faktury_Zachod')" class="bg-slate-200 active:bg-slate-300 text-slate-800 text-xs font-bold h-10 px-4 rounded-xl transition">
+            📷 Eksportuj Tabelę 1
+          </button>
+        </div>
+      </div>
+
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-slate-500 border-b border-slate-200 text-xs font-bold uppercase tracking-wider bg-slate-50">
+            <th class="py-2.5 px-3 w-16 text-center">Półka</th>
+            <th class="py-2.5 px-3">Asortyment</th>
+            <th class="py-2.5 px-3 w-28">Ilość (szt.)</th>
+            <th class="py-2.5 px-3 w-40">Kod EAN</th>
+            <th class="py-2.5 px-3 w-32 text-center no-print">Tryb Ceny</th>
+            <th class="py-2.5 px-3 w-36 text-right">Cena szt. Netto</th>
+            <th class="py-2.5 px-3 w-36 text-right">Wartość Netto</th>
+            <th class="py-2.5 px-3 w-12 text-center no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="purchaseTableBody" class="divide-y divide-slate-100 font-medium text-sm"></tbody>
+      </table>
+
+      <div class="border-t pt-3 grid grid-cols-3 gap-4 text-right">
+        <div class="bg-slate-50 p-3 rounded-xl text-left">
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">Łącznie Netto</span>
+          <span class="text-xl font-black text-slate-900" id="summaryNetto">0.00 zł</span>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl text-left">
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">Podatek VAT</span>
+          <span class="text-xl font-black text-slate-900" id="summaryVat">0.00 zł</span>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl text-left">
+          <span class="block text-[11px] text-slate-400 font-bold uppercase">Wartość Faktury (Brutto)</span>
+          <span class="text-xl font-black text-blue-600" id="summaryBrutto">0.00 zł</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="retailContainer" class="bg-gradient-to-br from-white to-amber-50/20 p-6 rounded-2xl shadow-sm border-2 border-amber-300 space-y-4">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-3">
+        <div>
+          <span class="text-xs font-bold text-amber-700 uppercase tracking-widest">Tabela 2 — Dla Kierownika Sklepu</span>
+          <h2 class="text-lg font-black text-slate-900">Sugerowane Ceny Półkowe & Zysk Sklepu</h2>
+        </div>
+        <div class="no-print">
+          <button onclick="exportPNG('retailContainer', 'Oferta_Dla_Sklepu_Zachod')" class="bg-amber-500 active:bg-amber-600 text-slate-950 text-xs font-bold h-10 px-5 rounded-xl shadow-md transition flex items-center gap-2">
+            📷 Pobierz Ofertę Sklepową (PNG)
+          </button>
+        </div>
+      </div>
+
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-slate-600 border-b border-amber-200 text-xs font-bold uppercase tracking-wider bg-amber-100/50">
+            <th class="py-2.5 px-3 w-16 text-center">Półka</th>
+            <th class="py-2.5 px-3">Asortyment</th>
+            <th class="py-2.5 px-3 w-24 text-center">Ilość</th>
+            <th class="py-2.5 px-3 w-32 text-right">Twój Zakup Netto</th>
+            <th class="py-2.5 px-3 w-28 text-center">Marża %</th>
+            <th class="py-2.5 px-3 w-36 text-right text-emerald-800">Suger. Półka (Brutto)</th>
+            <th class="py-2.5 px-3 w-36 text-right text-amber-900">Zysk Sklepu Netto</th>
+          </tr>
+        </thead>
+        <tbody id="retailTableBody" class="divide-y divide-amber-100/60 font-medium text-sm"></tbody>
+      </table>
+
+      <div class="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div>
+          <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Łączny Zysk Sklepu ze Standu</span>
+          <p class="text-xs text-slate-400 mt-0.5">Kalkulacja przy 100% wyprzedaży standu POSM</p>
+        </div>
+        <div class="text-right">
+          <span class="text-2xl font-black text-emerald-400" id="totalShopProfit">+0.00 zł netto</span>
+          <span class="block text-[11px] text-slate-300 font-semibold" id="averageShopMargin">Średnia marża detaliczna: 0%</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let shelves = [];
+
+    // Szablony: Minionki & Psi Patrol
+    const templates = {
+      'minionki': {
+        label: 'ROZLICZENIE STANDU NETTO — MINIONKI (7 PÓŁEK / 265 SZT.)',
+        targetNetto: 740.00,
+        items: [
+          { name: 'KRAKERSY MINIONKI 90 G', qty: 35, ean: '5907029013804', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PRECELKI MINIONKI 120 G', qty: 34, ean: '5907029013903', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI MINIONKI 200 G', qty: 28, ean: '5907029013866', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI MINIONKI 60 G', qty: 86, ean: '5907029013835', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029002259', isFixed: true, price: 3.69, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 }
+        ]
+      },
+      'psi-patrol': {
+        label: 'ROZLICZENIE STANDU NETTO — PSI PATROL (6 PÓŁEK / 179 SZT.)',
+        targetNetto: 704.00,
+        items: [
+          { name: 'KRAKERSY PSI PATROL 90 G', qty: 35, ean: '5907029013927', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PRECELKI PSI PATROL 120 G', qty: 34, ean: '5907029013989', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI PSI PATROL 200 G', qty: 28, ean: '5907029013965', isFixed: false, price: 0, marginPercent: 25 },
+          { name: 'PALUSZKI SER CEBULKA 180G', qty: 28, ean: '5907029010797', isFixed: true, price: 3.69, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 },
+          { name: 'PALUSZKI SOLONE 240G', qty: 27, ean: '5907029010773', isFixed: true, price: 3.69, marginPercent: 25 }
+        ]
+      }
+    };
+
+    function loadTemplate(key) {
+      const t = templates[key];
+      document.getElementById('targetPrice').value = t.targetNetto.toFixed(2);
+      document.getElementById('standTitle').innerText = t.label;
+      const globalM = parseFloat(document.getElementById('globalMargin').value) || 25;
+      
+      shelves = JSON.parse(JSON.stringify(t.items)).map(item => ({
+        ...item,
+        marginPercent: globalM
+      }));
+      calculate();
+    }
+
+    function clearAll() {
+      shelves = [];
+      document.getElementById('standTitle').innerText = 'ROZLICZENIE STANDU NETTO (WŁASNA LISTA)';
+      calculate();
+    }
+
+    function addRow() {
+      const globalM = parseFloat(document.getElementById('globalMargin').value) || 25;
+      shelves.push({
+        name: `PÓŁKA ${shelves.length + 1}`,
+        qty: 24,
+        ean: '',
+        isFixed: false,
+        price: 0,
+        marginPercent: globalM
+      });
+      calculate();
+    }
+
+    function removeRow(idx) {
+      shelves.splice(idx, 1);
+      calculate();
+    }
+
+    function toggleLock(idx) {
+      shelves[idx].isFixed = !shelves[idx].isFixed;
+      calculate();
+    }
+
+    function applyGlobalMargin(val) {
+      const m = Math.max(0, Math.min(95, parseFloat(val) || 0));
+      shelves.forEach(s => s.marginPercent = m);
+      calculate();
+    }
+
+    function updateField(idx, key, val) {
+      if (key === 'qty') shelves[idx].qty = Math.max(0, parseInt(val) || 0);
+      else if (key === 'price') shelves[idx].price = Math.max(0, parseFloat(val) || 0);
+      else if (key === 'marginPercent') shelves[idx].marginPercent = Math.max(0, Math.min(95, parseFloat(val) || 0));
+      else shelves[idx][key] = val;
+      calculate();
+    }
+
+    function calculate() {
+      const targetNetto = parseFloat(document.getElementById('targetPrice').value) || 0;
+      const vatRate = parseFloat(document.getElementById('vatRate').value) || 0;
+
+      let totalQty = 0;
+      let fixedBudget = 0;
+      let autoQty = 0;
+      let autoIndices = [];
+
+      shelves.forEach((s, idx) => {
+        totalQty += s.qty;
+        if (s.isFixed) {
+          fixedBudget += s.qty * s.price;
+        } else {
+          autoQty += s.qty;
+          autoIndices.push(idx);
+        }
+      });
+
+      const remainingBudget = targetNetto - fixedBudget;
+
+      if (autoQty > 0 && remainingBudget >= 0) {
+        const rawAutoPrice = remainingBudget / autoQty;
+        const roundedAutoPrice = Math.round(rawAutoPrice * 100) / 100;
+
+        let accumulatedAuto = 0;
+        autoIndices.forEach((idx, i) => {
+          if (i < autoIndices.length - 1) {
+            shelves[idx].price = roundedAutoPrice;
+            accumulatedAuto += shelves[idx].qty * roundedAutoPrice;
+          } else {
+            const lastNeededVal = remainingBudget - accumulatedAuto;
+            shelves[idx].price = shelves[idx].qty > 0 
+              ? Math.round((lastNeededVal / shelves[idx].qty) * 100) / 100 
+              : 0;
+          }
+        });
+      } else if (autoQty > 0 && remainingBudget < 0) {
+        autoIndices.forEach(idx => shelves[idx].price = 0);
+      }
+
+      render(targetNetto, vatRate, totalQty, remainingBudget);
+    }
+
+    function render(targetNetto, vatRate, totalQty, remainingBudget) {
+      const pBody = document.getElementById('purchaseTableBody');
+      const rBody = document.getElementById('retailTableBody');
+      pBody.innerHTML = '';
+      rBody.innerHTML = '';
+
+      let sumNetto = 0;
+      let totalShopProfit = 0;
+      let totalRetailTurnover = 0;
+
+      shelves.forEach((item, idx) => {
+        const lineTotal = item.qty * item.price;
+        sumNetto += lineTotal;
+
+        const marginDecimal = (item.marginPercent || 0) / 100;
+        const shelfNetto = marginDecimal < 1 ? item.price / (1 - marginDecimal) : item.price;
+        const shelfGross = shelfNetto * (1 + vatRate);
+        const unitProfit = shelfNetto - item.price;
+        const lineProfit = unitProfit * item.qty;
+
+        totalShopProfit += lineProfit;
+        totalRetailTurnover += shelfNetto * item.qty;
+
+        // Tabela 1: Faktura
+        const pTr = document.createElement('tr');
+        pTr.className = "hover:bg-slate-50";
+        pTr.innerHTML = `
+          <td class="py-2 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
+          <td class="py-2 px-3">
+            <input type="text" value="${item.name}" oninput="updateField(${idx}, 'name', this.value.toUpperCase())" class="w-full h-10 px-2 bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-blue-500 rounded font-bold text-slate-900 outline-none uppercase" />
+          </td>
+          <td class="py-2 px-3">
+            <input type="number" inputmode="numeric" value="${item.qty}" min="0" oninput="updateField(${idx}, 'qty', this.value)" class="w-20 h-10 px-2 border border-slate-300 rounded-lg text-right font-black text-slate-900 outline-none focus:border-blue-500" />
+          </td>
+          <td class="py-2 px-3">
+            <input type="text" inputmode="numeric" value="${item.ean}" placeholder="EAN" oninput="updateField(${idx}, 'ean', this.value)" class="w-36 h-10 px-1 font-mono text-xs text-slate-500 bg-transparent border-b border-transparent focus:border-blue-500 outline-none" />
+          </td>
+          <td class="py-2 px-3 text-center no-print">
+            <button onclick="toggleLock(${idx})" class="h-9 px-3 rounded-lg border font-bold text-xs transition ${
+              item.isFixed 
+                ? 'bg-amber-100 text-amber-900 border-amber-300' 
+                : 'bg-slate-100 text-slate-600 border-slate-200'
+            }">
+              ${item.isFixed ? '🔒 Stała' : '🔓 Auto'}
+            </button>
+          </td>
+          <td class="py-2 px-3 text-right">
+            <input type="number" step="0.01" inputmode="decimal" value="${item.price.toFixed(2)}" ${item.isFixed ? '' : 'disabled'} oninput="updateField(${idx}, 'price', this.value)" class="w-24 h-10 px-2 border rounded-lg text-right font-black ${
+              item.isFixed ? 'bg-white border-amber-400 text-amber-950 focus:border-amber-600' : 'bg-slate-100 border-slate-200 text-slate-500'
+            } outline-none" />
+          </td>
+          <td class="py-2 px-3 font-bold text-slate-900 text-right">
+            ${lineTotal.toFixed(2)} zł
+          </td>
+          <td class="py-2 px-3 text-center no-print">
+            <button onclick="removeRow(${idx})" class="text-slate-300 hover:text-rose-600 font-bold text-lg">✕</button>
+          </td>
+        `;
+        pBody.appendChild(pTr);
+
+        // Tabela 2: Oferta dla sklepu
+        const rTr = document.createElement('tr');
+        rTr.className = "hover:bg-amber-50/50";
+        rTr.innerHTML = `
+          <td class="py-2.5 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800">${item.name}</td>
+          <td class="py-2.5 px-3 text-center font-bold text-slate-700">${item.qty} szt.</td>
+          <td class="py-2.5 px-3 text-right font-medium text-slate-500">${item.price.toFixed(2)} zł</td>
+          <td class="py-2.5 px-3 text-center">
+            <div class="inline-flex items-center gap-1">
+              <input type="number" inputmode="numeric" value="${item.marginPercent}" min="0" max="95" oninput="updateField(${idx}, 'marginPercent', this.value)" class="w-14 h-9 px-1 text-center font-black text-amber-950 bg-white border border-amber-300 rounded-lg outline-none focus:border-amber-600" />
+              <span class="text-xs font-bold text-amber-600">%</span>
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-right">
+            <span class="text-base font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
+              ${shelfGross.toFixed(2)} zł
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-right font-black text-amber-950">
+            +${lineProfit.toFixed(2)} zł
+          </td>
+        `;
+        rBody.appendChild(rTr);
+      });
+
+      const vatAmount = sumNetto * vatRate;
+      const sumBrutto = sumNetto + vatAmount;
+      const diff = Math.round((sumNetto - targetNetto) * 100) / 100;
+
+      document.getElementById('totalQtyBadge').innerText = `${totalQty} szt.`;
+      document.getElementById('summaryNetto').innerText = `${sumNetto.toFixed(2)} zł`;
+      document.getElementById('summaryVat').innerText = `${vatAmount.toFixed(2)} zł`;
+      document.getElementById('summaryBrutto').innerText = `${sumBrutto.toFixed(2)} zł`;
+      document.getElementById('totalShopProfit').innerText = `+${totalShopProfit.toFixed(2)} zł netto`;
+
+      const avgMargin = totalRetailTurnover > 0 ? (totalShopProfit / totalRetailTurnover) * 100 : 0;
+      document.getElementById('averageShopMargin').innerText = `Średnia marża detaliczna: ${avgMargin.toFixed(1)}%`;
+
+      const balanceCard = document.getElementById('balanceCard');
+      const balanceStatus = document.getElementById('balanceStatus');
+      const balanceDiff = document.getElementById('balanceDiff');
+
+      if (remainingBudget < 0) {
+        balanceCard.className = "h-12 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-between bg-rose-50 border-rose-300 text-rose-800";
+        balanceStatus.innerText = "Błąd kwoty!";
+        balanceDiff.innerText = `+${Math.abs(remainingBudget).toFixed(2)} zł`;
+      } else if (Math.abs(diff) <= 0.05) {
+        balanceCard.className = "h-12 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-between bg-emerald-50 border-emerald-300 text-emerald-800";
+        balanceStatus.innerText = "Zbilansowano";
+        balanceDiff.innerText = `${sumNetto.toFixed(2)} zł`;
+      } else {
+        balanceCard.className = "h-12 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-between bg-amber-50 border-amber-300 text-amber-800";
+        balanceStatus.innerText = "Różnica";
+        balanceDiff.innerText = `${diff > 0 ? '+' : ''}${diff.toFixed(2)} zł`;
+      }
+    }
+
+    function exportPNG(containerId, filePrefix) {
+      const element = document.getElementById(containerId);
+      const buttons = element.querySelectorAll('.no-print');
+      buttons.forEach(b => b.style.display = 'none');
+
+      html2canvas(element, { scale: 2 }).then(canvas => {
+        buttons.forEach(b => b.style.display = '');
+        const link = document.createElement('a');
+        link.download = `${filePrefix}_${new Date().toISOString().slice(0, 10)}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
+    window.onload = () => loadTemplate('minionki');
+  </script>
+</body>
+</html>
